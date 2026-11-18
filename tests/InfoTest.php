@@ -149,6 +149,24 @@ final class InfoTest extends TestCase {
 	}
 
 	/**
+	 * A release candidate is that release: 7.1-RC1 meets 7.1, as core's
+	 * is_wp_version_compatible() says, but not 7.2.
+	 */
+	public function test_a_release_candidate_meets_its_release(): void {
+		$GLOBALS['sh_version'] = '7.1-RC1';
+
+		$this->assertTrue( Info::meets( '', '7.1' ) );
+		$this->assertTrue( Info::meets( '', '7.0' ) );
+		$this->assertFalse( Info::meets( '', '7.2' ) );
+		$this->assertSame( 'met (needs PHP 8.3, WordPress 7.1)', Info::requirements( '8.3', '7.1' )['debug'] );
+
+		$GLOBALS['sh_version'] = '7.1.4-src';
+
+		$this->assertTrue( Info::meets( '', '7.1.4' ) );
+		$this->assertFalse( Info::meets( '', '7.1.5' ) );
+	}
+
+	/**
 	 * One line for the tables, naming only the missing.
 	 */
 	public function test_tables(): void {

@@ -33,6 +33,7 @@ function sh_reset(): void {
 	];
 	$GLOBALS['sh_caps']    = [ 'view_site_health_checks' ];
 	$GLOBALS['sh_tables']  = [];
+	$GLOBALS['sh_version'] = '7.1.4';
 	$GLOBALS['wpdb']       = new ShWpdb();
 
 	( new ReflectionProperty( 'SugarCommerce\SiteHealth\SiteHealth', 'sets' ) )->setValue( null, [] );
@@ -222,7 +223,7 @@ function get_option( $name, $default_value = false ) {
 }
 
 function get_bloginfo( $show = '' ) {
-	return 'version' === $show ? '7.1.4' : '';
+	return 'version' === $show ? $GLOBALS['sh_version'] : '';
 }
 
 function wp_date( $format, $timestamp = null ) {

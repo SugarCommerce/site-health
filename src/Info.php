@@ -185,9 +185,29 @@ final class Info {
 	 * @since 1.0.0
 	 */
 	public static function meets( string $php, string $wp ): bool {
+		// Core's checks, which read a release candidate (7.1-RC1) as the
+		// release it becomes. A plain version_compare() puts 7.1-RC1 below
+		// 7.1, so the site that is testing the release was told it was too old.
+		if ( function_exists( 'is_php_version_compatible' ) && function_exists( 'is_wp_version_compatible' ) ) {
+			return is_php_version_compatible( $php ) && is_wp_version_compatible( $wp );
+		}
+
 		// Every version is at least '', so an empty one asks for nothing.
 		return version_compare( PHP_VERSION, $php, '>=' )
-			&& version_compare( (string) get_bloginfo( 'version' ), $wp, '>=' );
+			&& version_compare( self::release( (string) get_bloginfo( 'version' ) ), $wp, '>=' );
+	}
+
+	/**
+	 * A WordPress version without its pre-release suffix (-alpha, -beta,
+	 * -RC1, -src), the way is_wp_version_compatible() reads it.
+	 *
+	 * @param string $version A WordPress version.
+	 *
+	 * @return string
+	 * @since 1.0.0
+	 */
+	private static function release( string $version ): string {
+		return explode( '-', $version, 2 )[0];
 	}
 
 	/**

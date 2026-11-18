@@ -142,7 +142,9 @@ Anything missing is filled in, and an unknown status becomes `recommended`.
 The section is keyed by the id and has the plugin's label unless `info`
 provides a `label`. Its lines appear in this order:
 
-1. `version` and `requires`, if given
+1. `version` and `requires`, if given. `requires` is checked with core's
+   `is_php_version_compatible()` and `is_wp_version_compatible()`, so a release
+   candidate such as 7.1-RC1 counts as 7.1.
 2. your `fields`, an array or a callable
 3. `tables`: BerlinDB tables or table names (an iterable, or a callable that
    returns one). They're summarised in one line that names only the missing
