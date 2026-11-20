@@ -197,24 +197,12 @@ add_filter( 'myshop_site_info', function ( array $fields ): array {
 `SiteHealth::unregister( 'myshop' )` takes it out. `SiteHealth::info_url()` and
 `SiteHealth::status_url()` link to the two tabs.
 
-## Moving from arraypress/wp-*
+## Security
 
-From `arraypress/wp-register-site-health` (`ArrayPress\RegisterSiteHealth`).
-Every class, method, hook and REST route keeps its name; the global function
-is gone -- a global function is the one thing Strauss cannot prefix.
-
-| Old | New |
-|---|---|
-| `ArrayPress\RegisterSiteHealth\SiteHealth` | `SugarCommerce\SiteHealth\SiteHealth` |
-| `ArrayPress\RegisterSiteHealth\Result` | `SugarCommerce\SiteHealth\Result` |
-| `ArrayPress\RegisterSiteHealth\Info` | `SugarCommerce\SiteHealth\Info` |
-| `register_site_health( $id, $config )` | `SiteHealth::register( $id, $config )` |
-| `{id}_site_health_tests`, `{id}_site_info`, `{id}-site-health/v1/tests/{check}` | unchanged |
-| text domain `arraypress` | text domain `sugarcommerce` |
-
-New: `Result::all_or_none()`, from the retired SaaS `health` package. Its
-console report, exit code and chat-webhook alert are left out: on WordPress
-the Site Health screen is the report, and WordPress's weekly run is the cron.
+* Answers an async check over REST only for a user who may view Site Health checks (`view_site_health_checks`, as core's own), and only for a check registered as async
+* Takes the check's name from the route only as letters, numbers, hyphens and underscores
+* Keeps a description and its actions to a few inline tags with `wp_kses()`, and escapes every link's address and words
+* Leaves a line marked private out of the copied debug report, and `Info::yes_no()` says whether a key is saved without showing it
 
 ## Requirements
 
