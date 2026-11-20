@@ -34,7 +34,7 @@ final class Result {
 	 *
 	 * @since 1.0.0
 	 */
-	public const STATUSES = [ 'good', 'recommended', 'critical' ];
+	public const array STATUSES = [ 'good', 'recommended', 'critical' ];
 
 	/**
 	 * Everything is as it should be.

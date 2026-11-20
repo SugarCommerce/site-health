@@ -353,6 +353,7 @@ final class SiteHealthTest extends TestCase {
 		$route = $GLOBALS['sh_routes']['shop-site-health/v1/tests/(?P<test>[a-zA-Z0-9_-]+)'];
 
 		$this->assertSame( 'GET', $route['methods'] );
+		$this->assertSame( [ 'type' => 'string', 'required' => true, 'pattern' => '^[a-zA-Z0-9_-]+$' ], $route['args']['test'] );
 		$this->assertTrue( ( $route['permission_callback'] )() );
 
 		$GLOBALS['sh_caps'] = [];
