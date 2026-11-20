@@ -32,6 +32,8 @@ lines. Lines marked private stay out of the copied text.
 * Keep email addresses, URLs and anything else that identifies a site out of
   the text the Copy button copies
 * Let add-ons add their own checks and lines under the plugin's name
+* Know what the site runs on before an upload, an import or a payment: PHP's
+  limits and extensions, the disk, and whether this is the live site
 
 ## Installation
 
@@ -191,6 +193,39 @@ add_filter( 'myshop_site_info', function ( array $fields ): array {
 } );
 ```
 
+## What the site runs on
+
+What a check -- or a plugin deciding whether to start an import -- asks about
+the server, in `Server/`:
+
+```php
+use SugarCommerce\SiteHealth\Server\Disk;
+use SugarCommerce\SiteHealth\Server\Environment;
+use SugarCommerce\SiteHealth\Server\Php;
+
+Php::has_memory( '256M' );                       // still free under the limit
+Php::upload_max_filesize();                      // bytes, never '64M'
+Php::missing_extensions( [ 'intl', 'gd' ] );
+Php::has_function( 'set_time_limit' );           // not switched off by the host
+
+Disk::space();                                   // [ 'total', 'free', 'used', 'percent' ] for the site's disk
+Disk::has_space( '1G', $dir );
+
+Environment::type();                             // "local", "development", "staging", "production"
+Environment::is_production();                    // exactly one of the four is true
+Environment::is_local_host( 'shop.test' );       // the address test on its own
+```
+
+`Environment` asks WordPress first: `WP_ENVIRONMENT_TYPE` is the site owner
+saying what the site is, and is believed over any guess -- production
+included. Only a site that never said is guessed at: a local address
+(loopback, a private address, `*.test`, `*.local`, `*.localhost`,
+`*.example`, `*.invalid` -- not `*.dev`, which is a real public ending), then
+a `staging`, `stage`, `test` or `demo` label, then `WP_ENV`, `ENVIRONMENT`
+or `APP_ENV`, and `WP_DEBUG` last. It reads addresses with
+`sugarcommerce/network`'s `IP` and `Host`. The web server itself (nginx,
+Apache modules, X-Sendfile) is network's `Server`, beside the request headers.
+
 ## Elsewhere in the plugin
 
 `SiteHealth::get( 'myshop' )` returns the registration and
@@ -208,6 +243,7 @@ add_filter( 'myshop_site_info', function ( array $fields ): array {
 
 * PHP 8.3 or later
 * WordPress 7.1 or later
+* `sugarcommerce/network`, for `Server\Environment`'s address checks
 
 ## License
 
